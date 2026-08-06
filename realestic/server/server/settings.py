@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-(djkb%%tfg6z9ibgu7+-6h=_fi@fk+l%27=6vk3%_31zw%ny+_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "realistic-project.onrender.com",
+    "realistic-project.vercel.app",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
@@ -64,6 +69,7 @@ ROOT_URLCONF = 'server.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://realistic-project.vercel.app",
 ]
 
 TEMPLATES = [
