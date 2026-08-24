@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { Link } from "react-router-dom";
 import {
   Phone,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const Agents = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ const Agents = () => {
 
   const fetchAgents = async () => {
     try {
-      const res = await axios.get(`${API}/agents/`);
+      const res = await api.get(`${API}/agents/`);
       const data = res.data.data || res.data || [];
       setAgents(Array.isArray(data) ? data : []);
     } catch (err) {

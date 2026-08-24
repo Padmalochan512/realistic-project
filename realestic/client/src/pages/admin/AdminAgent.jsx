@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import {
   Users,
   UserPlus,
@@ -18,7 +18,7 @@ import {
   UserCheck,
 } from "lucide-react";
 
-const API = `${import.meta.env.VITE_BASE_URL}/agents/`;
+const API = `${API_BASE_URL}/agents/`;
 
 const initialState = {
   name: "",
@@ -53,7 +53,7 @@ const AdminAgent = () => {
   const fetchAgents = async () => {
     setFetching(true);
     try {
-      const res = await axios.get(API, config);
+      const res = await api.get(API, config);
       const data = res.data.data || res.data || [];
       setAgents(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -101,9 +101,9 @@ const AdminAgent = () => {
 
     try {
       if (editingId) {
-        await axios.put(`${API}${editingId}/`, formData, config);
+        await api.put(`${API}${editingId}/`, formData, config);
       } else {
-        await axios.post(API, formData, config);
+        await api.post(API, formData, config);
       }
 
       fetchAgents();
@@ -123,7 +123,7 @@ const AdminAgent = () => {
       return;
 
     try {
-      await axios.delete(`${API}${id}/`, config);
+      await api.delete(`${API}${id}/`, config);
       fetchAgents();
     } catch (err) {
       console.error("Delete agent error:", err);

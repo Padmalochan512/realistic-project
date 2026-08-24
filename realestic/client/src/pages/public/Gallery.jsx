@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import {
   X,
   ChevronLeft,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 
 const Gallery = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [images, setImages] = useState([]);
   const [filteredImages, setFilteredImages] = useState([]);
@@ -39,7 +39,7 @@ const Gallery = () => {
   const fetchGallery = async () => {
     setFetching(true);
     try {
-      const res = await axios.get(`${API}/gallery/`);
+      const res = await api.get(`${API}/gallery/`);
       const data = res.data.data || res.data || [];
       const list = Array.isArray(data) ? data : [];
       setImages(list);

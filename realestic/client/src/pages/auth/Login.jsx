@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 import { Link, useNavigate } from "react-router-dom";
 import { 
-  Building2, 
   Lock, 
   User, 
   Eye, 
@@ -39,10 +38,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/login/`,
-        formData
-      );
+      const response = await api.post("/login/", formData);
 
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
@@ -86,7 +82,6 @@ const Login = () => {
             <img src={logo} alt="CNJ Home Buyers Logo" className="w-40  mb-4" />
          </Link>
 
-
           <h1 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight -mt-10">
             Portal Authentication
           </h1>
@@ -120,6 +115,7 @@ const Login = () => {
               <input
                 type="text"
                 name="username"
+                id="username"
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Enter your administrative username"
@@ -145,6 +141,7 @@ const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
+                id="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter your account password"
@@ -166,6 +163,7 @@ const Login = () => {
           {/* Submit Action Button */}
           <button
             type="submit"
+            id="login-submit"
             disabled={loading}
             className="w-full bg-secondary hover:bg-secondary/90 disabled:opacity-60 text-white font-bold py-3.5 rounded-xl transition-all duration-200 cursor-pointer disabled:cursor-not-allowed shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm mt-2"
           >
@@ -182,8 +180,6 @@ const Login = () => {
 
         {/* Footer Navigation */}
         <div className="text-center mt-8 pt-6 border-t border-slate-100 space-y-3">
-        
-
           <div>
             <Link
               to="/"

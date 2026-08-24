@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { 
   Phone, 
   Mail, 
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 const Contact = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -44,7 +44,7 @@ const Contact = () => {
     setError("");
 
     try {
-      const res = await axios.post(`${API}/contacts/create/`, formData);
+      const res = await api.post(`${API}/contacts/create/`, formData);
 
       setSuccess(
         res.data.message || "Your inquiry has been submitted successfully! We will get in touch with you shortly."

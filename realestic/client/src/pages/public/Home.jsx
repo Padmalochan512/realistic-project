@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { Link } from "react-router-dom";
 import {
   Building2,
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 const Home = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [featuredListings, setFeaturedListings] = useState([]);
   const [loadingListings, setLoadingListings] = useState(true);
@@ -27,7 +27,7 @@ const Home = () => {
 
   const fetchFeaturedListings = async () => {
     try {
-      const res = await axios.get(`${API}/listings/`);
+      const res = await api.get(`${API}/listings/`);
       const data = res.data.data || res.data || [];
       const arrayData = Array.isArray(data) ? data : [];
       setFeaturedListings(arrayData.slice(0, 3));

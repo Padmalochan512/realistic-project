@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { useParams, Link } from "react-router-dom";
 import { 
   Phone, 
@@ -15,7 +15,7 @@ import {
 
 const AgentDetails = () => {
   const { id } = useParams();
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [agent, setAgent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,7 @@ const AgentDetails = () => {
   const fetchAgent = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/agents/${id}/`);
+      const res = await api.get(`${API}/agents/${id}/`);
       const data = res.data.data || res.data || null;
       setAgent(data);
     } catch (err) {
@@ -53,7 +53,7 @@ const AgentDetails = () => {
 
     try {
       // Optional API submission endpoint for agent contact form
-      await axios.post(`${API}/inquiries/`, {
+      await api.post(`${API}/inquiries/`, {
         agent_id: id,
         ...formData
       });

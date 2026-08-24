@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import {
   MessageSquare,
   Search,
@@ -25,12 +25,12 @@ const AdminContact = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContact, setSelectedContact] = useState(null);
 
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const fetchContacts = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/contacts/`);
+      const res = await api.get(`${API}/contacts/`);
       const data = res.data.data || res.data || [];
       setContacts(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -52,7 +52,7 @@ const AdminContact = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(`${API}/contacts/${id}/delete/`);
+      await api.delete(`${API}/contacts/${id}/delete/`);
       setContacts((prev) => prev.filter((item) => item.id !== id));
       if (selectedContact?.id === id) setSelectedContact(null);
     } catch (error) {
@@ -63,7 +63,7 @@ const AdminContact = () => {
 
   const handleStatusChange = async (id, status) => {
     try {
-      await axios.put(`${API}/contacts/${id}/update/`, { status });
+      await api.put(`${API}/contacts/${id}/update/`, { status });
       setContacts((prev) =>
         prev.map((item) => (item.id === id ? { ...item, status } : item)),
       );

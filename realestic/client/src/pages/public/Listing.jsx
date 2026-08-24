@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { Link } from "react-router-dom";
 import {
   BedDouble,
@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 const Listing = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
@@ -31,7 +31,7 @@ const Listing = () => {
 
   const fetchListings = async () => {
     try {
-      const res = await axios.get(`${API}/listings/`);
+      const res = await api.get(`${API}/listings/`);
       const data = res.data.data || res.data || [];
       setListings(Array.isArray(data) ? data : []);
     } catch (err) {

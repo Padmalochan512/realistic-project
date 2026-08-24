@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 import {
   X,
   Plus,
@@ -12,7 +12,7 @@ import {
   Eye,
 } from "lucide-react";
 
-const categories = ["house", "apartment", "land", "commercial"];
+const categories = ["house", "apartment", "land"];
 
 const amenitiesList = [
   "Parking",
@@ -125,9 +125,9 @@ const ListingFormModal = ({ open, onClose, editing, fetchListings, API }) => {
       };
 
       if (editing) {
-        await axios.put(`${API}/listings/${editing.id}/update/`, payload);
+        await api.put(`${API}/listings/${editing.id}/update/`, payload);
       } else {
-        await axios.post(`${API}/listings/create/`, payload);
+        await api.post(`${API}/listings/create/`, payload);
       }
 
       fetchListings();
@@ -211,6 +211,7 @@ const ListingFormModal = ({ open, onClose, editing, fetchListings, API }) => {
                 <textarea
                   rows={4}
                   name="description"
+                  required
                   placeholder="Provide detailed information about the property, condition, location highlights, etc."
                   value={form.description}
                   onChange={handleChange}

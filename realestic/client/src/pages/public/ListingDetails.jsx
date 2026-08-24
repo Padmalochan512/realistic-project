@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { useParams, Link } from "react-router-dom";
 import {
   BedDouble,
@@ -18,7 +18,7 @@ import {
 
 const ListingDetails = () => {
   const { id } = useParams();
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +31,7 @@ const ListingDetails = () => {
 
   const fetchListing = async () => {
     try {
-      const res = await axios.get(`${API}/listings/${id}/`);
+      const res = await api.get(`${API}/listings/${id}/`);
       const data = res.data.data || res.data;
 
       setListing(data);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import {
   Plus,
   Pencil,
@@ -21,7 +21,7 @@ import {
 import ListingFormModal from "../../components/admin/ListingFormModal";
 
 const AdminListing = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ const AdminListing = () => {
   const fetchListings = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`${API}/listings/`);
+      const res = await api.get(`${API}/listings/`);
       const data = res.data.data || res.data || [];
       setListings(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -61,7 +61,7 @@ const AdminListing = () => {
     if (!window.confirm("Are you sure you want to delete this property listing?")) return;
 
     try {
-      await axios.delete(`${API}/listings/${id}/delete/`);
+      await api.delete(`${API}/listings/${id}/delete/`);
       fetchListings();
     } catch (err) {
       console.error("Delete listing error:", err);

@@ -1,6 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../lib/api";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  ArrowLeft,
+  Loader2,
+} from "lucide-react";
+import logo from "../../assets/logo.png";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -11,13 +21,13 @@ const Register = () => {
     password: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -26,31 +36,21 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
     setMessage("");
     setError("");
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/register/`,
-        formData
-      );
+      const response = await api.post("/register/", formData);
 
       setMessage(response.data.message || "Registration successful");
-
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-      });
-
+      setFormData({ username: "", email: "", password: "" });
       navigate("/login");
     } catch (error) {
       setError(
         error.response?.data?.message ||
           error.response?.data?.detail ||
-          "Registration failed"
+          "Registration failed. Please try again."
       );
     } finally {
       setLoading(false);
@@ -58,138 +58,146 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] bg-[#F8F1E7] flex items-center justify-center px-4 py-10 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#E97824]/10 rounded-full" />
-      <div className="absolute -bottom-40 -right-32 w-[500px] h-[500px] bg-[#20845E]/10 rounded-full" />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 relative overflow-hidden">
+      {/* Background Decorative Gradient Blobs */}
+      <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-32 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Register Card */}
-      <div className="relative z-10 w-full max-w-sm bg-white border border-[#E6D5C5] rounded-2xl shadow-lg p-6">
-        {/* Logo */}
-        <div className="flex justify-center mb-3">
-          LOGO
-        </div>
-
-        {/* Heading */}
-        <div className="text-center mb-6">
-          <p className="text-[#20845E] text-xs font-semibold uppercase tracking-widest mb-1">
-            Coffee House
-          </p>
-
-          <h1 className="text-2xl font-bold text-[#3B120D]">
+      <div className="relative z-10 w-full max-w-md bg-white border border-slate-200 rounded-3xl shadow-xl p-8 sm:p-10">
+        {/* Brand Header */}
+        <div className="flex flex-col items-center mb-8 text-center">
+          <Link to="/">
+            <img src={logo} alt="CNJ Home Buyers Logo" className="w-40 mb-4" />
+          </Link>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight -mt-10">
             Create Account
           </h1>
-
-          <p className="text-[#765C50] text-sm mt-1">
-            Join us and enjoy your favorite coffee.
+          <p className="text-slate-500 text-xs sm:text-sm mt-1.5">
+            Register to access property listings and admin control.
           </p>
         </div>
 
         {/* Success */}
         {message && (
-          <div className="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm">
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm rounded-xl">
             {message}
           </div>
         )}
 
         {/* Error */}
         {error && (
-          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
-            {error}
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-xl flex items-start gap-3">
+            <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
+            <span className="leading-snug font-medium">{error}</span>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Username */}
           <div>
-            <label className="block text-sm font-semibold text-[#3B120D] mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
               Username
             </label>
-
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter username"
-              required
-              className="w-full px-4 py-3 bg-[#FFFCF8] border border-[#E6D5C5] rounded-xl outline-none focus:border-[#E97824] focus:ring-2 focus:ring-[#E97824]/20"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <User size={18} />
+              </div>
+              <input
+                type="text"
+                name="username"
+                id="reg-username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Enter username"
+                required
+                className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+              />
+            </div>
           </div>
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-[#3B120D] mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
               Email
             </label>
-
             <input
               type="email"
               name="email"
+              id="reg-email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter email"
+              placeholder="Enter email address"
               required
-              className="w-full px-4 py-3 bg-[#FFFCF8] border border-[#E6D5C5] rounded-xl outline-none focus:border-[#E97824] focus:ring-2 focus:ring-[#E97824]/20"
+              className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-semibold text-[#3B120D] mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
               Password
             </label>
-
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter password"
-              required
-              className="w-full px-4 py-3 bg-[#FFFCF8] border border-[#E6D5C5] rounded-xl outline-none focus:border-[#E97824] focus:ring-2 focus:ring-[#E97824]/20"
-            />
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <Lock size={18} />
+              </div>
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                id="reg-password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter password"
+                required
+                className="w-full pl-10 pr-12 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs sm:text-sm placeholder:text-slate-400 outline-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition cursor-pointer"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
-          {/* Register Button */}
+          {/* Submit */}
           <button
             type="submit"
+            id="register-submit"
             disabled={loading}
-            className="w-full bg-[#E97824] hover:bg-[#D66718] disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-all duration-300 cursor-pointer"
+            className="w-full bg-secondary hover:bg-secondary/90 disabled:opacity-60 text-white font-bold py-3.5 rounded-xl transition-all duration-200 cursor-pointer disabled:cursor-not-allowed shadow-sm hover:shadow-md flex items-center justify-center gap-2 text-xs sm:text-sm mt-2"
           >
             {loading ? (
-              <span className="flex justify-center items-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
-                Registering...
-              </span>
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                <span>Registering...</span>
+              </>
             ) : (
-              "Create Account"
+              <span>Create Account</span>
             )}
           </button>
         </form>
 
-        {/* Login */}
-        <div className="text-center mt-5 pt-5 border-t border-[#F0E4D8]">
-          <p className="text-sm text-[#765C50]">
+        {/* Footer */}
+        <div className="text-center mt-8 pt-6 border-t border-slate-100 space-y-3">
+          <p className="text-xs text-slate-500">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-[#20845E] hover:text-[#176B4C] font-semibold transition"
-            >
-              Login
+            <Link to="/login" className="font-bold text-secondary hover:underline transition">
+              Sign In
             </Link>
           </p>
-        </div>
-
-        {/* Home */}
-        <div className="text-center mt-3">
-          <Link
-            to="/"
-            className="text-sm text-[#765C50] hover:text-[#E97824] transition"
-          >
-            ← Back to Home
-          </Link>
+          <div>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-slate-700 transition"
+            >
+              <ArrowLeft size={14} />
+              <span>Back to Public Website</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

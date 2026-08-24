@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import {
   Pencil,
   Plus,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 const AdminGallery = () => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [images, setImages] = useState([]);
   const [editing, setEditing] = useState(null);
@@ -31,7 +31,7 @@ const AdminGallery = () => {
   const fetchGallery = async () => {
     setFetching(true);
     try {
-      const res = await axios.get(`${API}/gallery/`);
+      const res = await api.get(`${API}/gallery/`);
       const data = res.data.data || res.data || [];
       setImages(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -54,11 +54,11 @@ const AdminGallery = () => {
 
     try {
       if (editing) {
-        await axios.put(`${API}/gallery/${editing}/update/`, {
+        await api.put(`${API}/gallery/${editing}/update/`, {
           image_url: imageUrl,
         });
       } else {
-        await axios.post(`${API}/gallery/create/`, {
+        await api.post(`${API}/gallery/create/`, {
           image_url: imageUrl,
         });
       }
@@ -87,7 +87,7 @@ const AdminGallery = () => {
     if (!window.confirm("Are you sure you want to delete this photo from the gallery?")) return;
 
     try {
-      await axios.delete(`${API}/gallery/${id}/delete/`);
+      await api.delete(`${API}/gallery/${id}/delete/`);
       fetchGallery();
     } catch (err) {
       console.error("Delete gallery image error:", err);

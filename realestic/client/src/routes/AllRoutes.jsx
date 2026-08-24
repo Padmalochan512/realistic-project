@@ -33,11 +33,11 @@ const AllRoutes = () => {
       <Route path="/register" element={<Register />} />
 
       <Route element={<AdminPrivateRoute />}>
-        <Route path="admin/dashboard/" element={<AdminDashboard />} />
-        <Route path="admin/contact" element={<AdminContact />} />
-        <Route path="admin/listing" element={<AdminListing />} />
-        <Route path="admin/gallery" element={<AdminGallery />} />
-        <Route path="admin/agent" element={<AdminAgent />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/contact" element={<AdminContact />} />
+        <Route path="/admin/listing" element={<AdminListing />} />
+        <Route path="/admin/gallery" element={<AdminGallery />} />
+        <Route path="/admin/agent" element={<AdminAgent />} />
       </Route>
     </Routes>
   );

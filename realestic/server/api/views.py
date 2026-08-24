@@ -5,9 +5,18 @@ from api.serializers import RegisterSerializer,ContactSerializer,ListingSerializ
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAdminUser
+from rest_framework.decorators import permission_classes
 from rest_framework import status
 from api.models import Contact,Listing,Gallery, Agent
+
+
+class IsAdminOrReadOnly(BasePermission):
+    """Keep the public catalogue readable while protecting admin changes."""
+    def has_permission(self, request, view):
+        return request.method in ("GET", "HEAD", "OPTIONS") or bool(
+            request.user and request.user.is_staff
+        )
 
 
 # Create your views here.
@@ -24,7 +33,7 @@ def register(request):
             "user":serData.data
         })
         
-    return Response(serData.errors)
+    return Response(serData.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login(request):
@@ -46,9 +55,7 @@ def login(request):
            "is_superuser": user.is_superuser
        })
     
-    return Response({
-        "message":"Invalid Cred"
-    })
+    return Response({"message": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
    
 @api_view(["POST"])
 def create_contact(request):
@@ -67,7 +74,25 @@ def create_contact(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)      
 
+
+@api_view(["POST"])
+def create_inquiry(request):
+    """Store an agent-profile enquiry using the existing contact workflow."""
+    agent_name = request.data.get("agent_name", "an agent")
+    serializer = ContactSerializer(data={
+        "name": request.data.get("name", ""),
+        "email": request.data.get("email", ""),
+        "phone": request.data.get("phone", ""),
+        "message": request.data.get("message", ""),
+        "subject": f"Agent enquiry: {agent_name}",
+    })
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"success": True, "data": serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @api_view(["GET"])
+@permission_classes([IsAdminUser])
 def get_contacts(request):
     contacts = Contact.objects.all()
     serializer = ContactSerializer(contacts, many=True)
@@ -81,6 +106,7 @@ def get_contacts(request):
     )
     
 @api_view(["GET"])
+@permission_classes([IsAdminUser])
 def get_contact(request, pk):
     try:
         contact = Contact.objects.get(pk=pk)
@@ -100,6 +126,7 @@ def get_contact(request, pk):
     )
     
 @api_view(["PUT"])
+@permission_classes([IsAdminUser])
 def update_contact(request, pk):
     try:
         contact = Contact.objects.get(pk=pk)
@@ -125,6 +152,7 @@ def update_contact(request, pk):
 
 
 @api_view(["DELETE"])
+@permission_classes([IsAdminUser])
 def delete_contact(request, pk):
     try:
         contact = Contact.objects.get(pk=pk)
@@ -145,6 +173,7 @@ def delete_contact(request, pk):
 
 # Create Listing
 @api_view(["POST"])
+@permission_classes([IsAdminUser])
 def create_listing(request):
     serializer = ListingSerializer(data=request.data)
 
@@ -205,6 +234,7 @@ def get_listing(request, pk):
 
 # Update Listing
 @api_view(["PUT"])
+@permission_classes([IsAdminUser])
 def update_listing(request, pk):
     try:
         listing = Listing.objects.get(id=pk)
@@ -239,6 +269,7 @@ def update_listing(request, pk):
 
 # Delete Listing
 @api_view(["DELETE"])
+@permission_classes([IsAdminUser])
 def delete_listing(request, pk):
     try:
         listing = Listing.objects.get(id=pk)
@@ -262,6 +293,7 @@ def delete_listing(request, pk):
     
 # Create Image
 @api_view(["POST"])
+@permission_classes([IsAdminUser])
 def create_gallery(request):
     serializer = GallerySerializer(data=request.data)
 
@@ -322,6 +354,7 @@ def get_gallery_image(request, pk):
 
 # Update Image
 @api_view(["PUT"])
+@permission_classes([IsAdminUser])
 def update_gallery(request, pk):
     try:
         image = Gallery.objects.get(id=pk)
@@ -356,6 +389,7 @@ def update_gallery(request, pk):
 
 # Delete Image
 @api_view(["DELETE"])
+@permission_classes([IsAdminUser])
 def delete_gallery(request, pk):
     try:
         image = Gallery.objects.get(id=pk)
@@ -379,6 +413,7 @@ def delete_gallery(request, pk):
     
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAdminOrReadOnly])
 def agent_list(request):
     if request.method == "GET":
         agents = Agent.objects.all().order_by("-id")
@@ -395,6 +430,7 @@ def agent_list(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAdminOrReadOnly])
 def agent_detail(request, pk):
     try:
         agent = Agent.objects.get(pk=pk)

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api, { API_BASE_URL } from "../../lib/api";
 import { X } from "lucide-react";
 
 const initialState = {
@@ -12,7 +12,7 @@ const initialState = {
 };
 
 const BookingModal = ({ open, onClose, service }) => {
-  const API = import.meta.env.VITE_BASE_URL;
+  const API = API_BASE_URL;
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(initialState);
@@ -38,7 +38,7 @@ const BookingModal = ({ open, onClose, service }) => {
     setLoading(true);
 
     try {
-      await axios.post(`${API}/bookings/create/`, {
+      await api.post(`${API}/bookings/create/`, {
         ...form,
         service: service.id,
       });

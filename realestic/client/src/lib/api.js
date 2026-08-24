@@ -1,0 +1,15 @@
+import axios from "axios";
+
+// VITE_BASE_URL can point at the deployed Django API.  The fallback keeps the
+// client usable during local development without an extra environment file.
+export const API_BASE_URL = (import.meta.env.VITE_BASE_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+
+const api = axios.create({ baseURL: API_BASE_URL });
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) config.headers.Authorization = `Token ${token}`;
+  return config;
+});
+
+export default api;
