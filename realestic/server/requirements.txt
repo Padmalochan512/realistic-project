@@ -9,6 +9,10 @@ djangorestframework==3.16.1
 # CORS Headers
 django-cors-headers==4.9.0
 
+# Database (PostgreSQL support for production)
+dj-database-url==2.1.0
+psycopg2-binary==2.9.9
+
 # Production Server
 gunicorn==23.0.0
 
